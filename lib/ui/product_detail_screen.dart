@@ -3,23 +3,27 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-class ProductDetailScreen extends StatelessWidget {
+class ProductDetailScreen extends StatefulWidget {
   final int productId;
 
   const ProductDetailScreen({super.key, required this.productId});
 
   @override
+  _ProductDetailScreenState createState() => _ProductDetailScreenState();
+}
+
+class _ProductDetailScreenState extends State<ProductDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final productProvider = Provider.of<ProductProvider>(context, listen: false);
+      productProvider.fetchProductDetail(widget.productId);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final productProvider = Provider.of<ProductProvider>(context);
-
-    Future _fetchProductDetail() async {
-      await productProvider.fetchProductDetail(productId);
-    }
-
-    if (productProvider.productDetail == null) {
-      _fetchProductDetail();
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Product Details'),
@@ -139,7 +143,8 @@ class ProductDetailScreen extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12), backgroundColor: Colors.red,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      backgroundColor: Colors.red,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(28),
                       ),
